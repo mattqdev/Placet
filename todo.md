@@ -7,3 +7,8 @@ task division seems good , placet divided opencode prompt in 2 tasks and claude 
 - Takes a few seconds between click on the thumbs up and getting the files recap, so please fix this waiting time.
 
 crea uno script/comando o quello che ritieni piu opportuno per buildare in autonomia una build e release di placet .vsix, quando invocato il comando (o la github action se preferisci). Adesso non ho idea di come far aggiornare in automatico placet sul marketplace prendendolo dalla release, quindi per ora sto aggiornando ri-uplodandno ogni volta a mano un nuovo file .vsix, ma se hai un idea di come automatizzare il processo ogni nuova release fammi sapere
+
+# todo
+
+- aggiungere visivamente una divisione bellina delle task precendenti (quelle quindi completate) con quelle in corso di sviluppo
+- mettere degli indicativi di tempo sulle task (tipo "2 Hours ago", "10 Minutes ago" eccetera)

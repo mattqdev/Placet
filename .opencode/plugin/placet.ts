@@ -155,6 +155,13 @@ function extractCommand(args: unknown): string | undefined {
   return typeof candidate === 'string' ? candidate : undefined;
 }
 
+function extractFilePath(args: unknown): string | undefined {
+  if (typeof args !== 'object' || args === null) return undefined;
+  const record = args as Record<string, unknown>;
+  const candidate = record.filePath ?? record.file_path ?? record.path;
+  return typeof candidate === 'string' ? candidate : undefined;
+}
+
 // Telemetry must never disrupt the user's opencode session — swallow
 // anything a handler throws instead of letting it surface as a plugin error.
 function safe<Args extends unknown[]>(
@@ -225,12 +232,20 @@ export const PlacetPlugin: Plugin = async ({ directory }) => {
         const { sessionID } = event.properties;
         const t = target(sessionID);
         if (!t) return;
+        // session.idle fires once the AI has finished responding, so
+        // whatever task was active is, by definition, the one it just
+        // finished working on — nothing else will come along afterwards to
+        // flip it to "completed" (that only happens today when a
+        // *subsequent* todo.updated marks it done, which never happens for
+        // the session's last task). Reporting it as completed rather than
+        // 'waiting' avoids leaving the last task of every session stuck
+        // showing "Waiting" forever.
         await send({
           source: 'opencode',
           sessionId: sessionID,
           taskId: t.taskId,
           title: t.title,
-          status: 'waiting',
+          status: 'completed',
           filesTouched: [],
           timestamp: Date.now(),
         });
@@ -238,10 +253,13 @@ export const PlacetPlugin: Plugin = async ({ directory }) => {
       }
 
       if (event.type === 'file.edited') {
-        // This event carries no sessionID — attribute it to whichever
-        // session most recently had activity. Fine for the common case of
-        // one active opencode session per project; concurrent sessions in
-        // the same project are a known v1 limitation.
+        // This event carries no sessionID, so it's attributed to whichever
+        // session most recently had activity — which can race with a
+        // todo.updated that has just switched the active task, misfiling
+        // the file under the wrong one. tool.execute.after (below) already
+        // attaches the file directly, scoped to its own sessionID, at the
+        // exact moment the edit happens, so this is just a status nudge —
+        // it deliberately does not touch filesTouched.
         const sessionID = lastActiveSessionId;
         if (!sessionID) return;
         const t = target(sessionID);
@@ -252,7 +270,7 @@ export const PlacetPlugin: Plugin = async ({ directory }) => {
           taskId: t.taskId,
           title: t.title,
           status: 'coding',
-          filesTouched: [event.properties.file],
+          filesTouched: [],
           timestamp: Date.now(),
         });
       }
@@ -293,8 +311,16 @@ export const PlacetPlugin: Plugin = async ({ directory }) => {
 
       const toolName = input.tool.toLowerCase();
       let status: TaskStatus = 'thinking';
+      let filesTouched: string[] = [];
       if (EDIT_TOOL_NAMES.has(toolName)) {
         status = 'coding';
+        // Attach the file here, scoped to this exact tool call's sessionID
+        // and the target task computed at this exact moment — more
+        // reliable than the separate (sessionID-less) file.edited event,
+        // which could otherwise land on whatever task a later todo.updated
+        // has since switched to.
+        const file = extractFilePath(input.args);
+        if (file) filesTouched = [file];
       } else if (toolName === 'bash') {
         const command = extractCommand(input.args);
         status = command && TEST_COMMAND_PATTERNS.some((p) => p.test(command)) ? 'testing' : 'coding';
@@ -306,7 +332,7 @@ export const PlacetPlugin: Plugin = async ({ directory }) => {
         taskId: t.taskId,
         title: t.title,
         status,
-        filesTouched: [],
+        filesTouched,
         timestamp: Date.now(),
       });
     }),
