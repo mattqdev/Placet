@@ -80,7 +80,7 @@ test('forwarder: real dist/forwarder.js drives a full task lifecycle through the
     assert.equal(editEvent?.status, 'coding');
 
     const stopEvent = events[events.length - 1];
-    assert.equal(stopEvent.status, 'waiting');
+    assert.equal(stopEvent.status, 'completed');
     assert.equal(stopEvent.taskId, jwtTaskId);
   } finally {
     await cleanup();

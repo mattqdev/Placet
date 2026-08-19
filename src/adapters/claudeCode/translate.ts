@@ -104,6 +104,13 @@ function translateStop(sessionId: string, cache: SessionCache, timestamp: number
   const title = cache.activeTaskId ? cache.activeTaskTitle : cache.turnTitle;
   if (!taskId || !title) return { events: [], cache };
 
+  // Stop fires once per turn, so whatever task is still active/current when
+  // it fires is, by definition, the one the AI just finished working on —
+  // there's no further signal coming to flip it to "completed" later (that
+  // only happens today when a *subsequent* TodoWrite marks it done, which
+  // never happens for the session's last task). Report it as completed
+  // rather than 'waiting', which used to leave the last task of every
+  // session stuck showing "Waiting" forever.
   return {
     cache,
     events: [
@@ -112,7 +119,7 @@ function translateStop(sessionId: string, cache: SessionCache, timestamp: number
         sessionId,
         taskId,
         title,
-        status: 'waiting',
+        status: 'completed',
         filesTouched: [],
         timestamp,
       },

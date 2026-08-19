@@ -9,6 +9,7 @@ import { ensureGitignoreEntry } from './workspace/ensureGitignore';
 import { connectClaudeCode } from './adapters/claudeCode/installer';
 import { connectOpencode } from './adapters/opencode/installer';
 import { runApproveFlow } from './approve/approveFlow';
+import { registerGitHeadContentProvider } from './panel/diffRecap';
 import type { Task } from './types';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
@@ -42,6 +43,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     return;
   }
   context.subscriptions.push({ dispose: () => server.dispose() });
+  context.subscriptions.push(registerGitHeadContentProvider());
 
   const onApprove = (task: Task) => {
     void runApproveFlow(workspaceRoot, task, store, logger);

@@ -68,6 +68,7 @@ test('opencode plugin: full task lifecycle — chat.message, todo.updated, file.
         },
       },
     });
+    await hooks['tool.execute.after']({ tool: 'edit', sessionID, callID: 'c3', args: { filePath: '/repo/login.ts' } });
     await hooks.event({ event: { type: 'file.edited', properties: { file: '/repo/login.ts' } } });
     await hooks.event({ event: { type: 'session.idle', properties: { sessionID } } });
 
@@ -99,9 +100,66 @@ test('opencode plugin: full task lifecycle — chat.message, todo.updated, file.
 
     assert.ok(events.some((e) => e.title === 'Add JWT middleware' && e.status === 'completed'));
 
+    // session.idle reports the still-active task as completed, not
+    // 'waiting' — otherwise the session's last task would show "Waiting"
+    // forever, since nothing else follows to flip it to done.
     const idleEvent = events[events.length - 1];
-    assert.equal(idleEvent.status, 'waiting');
+    assert.equal(idleEvent.status, 'completed');
     assert.equal(idleEvent.taskId, t2Id);
+  } finally {
+    await cleanup();
+  }
+});
+
+test('opencode plugin: a file.edited event racing a todo switch does not misattribute the file (tool.execute.after is authoritative)', async () => {
+  const { hooks, server, cleanup } = await setup();
+  try {
+    const sessionID = 'oc-sess-2';
+
+    await hooks.event({
+      event: {
+        type: 'todo.updated',
+        properties: {
+          sessionID,
+          todos: [
+            { id: 't1', content: 'Task one', status: 'in_progress', priority: 'high' },
+            { id: 't2', content: 'Task two', status: 'pending', priority: 'medium' },
+          ],
+        },
+      },
+    });
+    await hooks['tool.execute.after']({ tool: 'edit', sessionID, callID: 'c1', args: { filePath: '/repo/one.ts' } });
+
+    // Switch active task to t2 before the (sessionID-less) file.edited event
+    // for one.ts is delivered — simulating the plugin's event bus reordering
+    // relative to the tool call that actually produced it.
+    await hooks.event({
+      event: {
+        type: 'todo.updated',
+        properties: {
+          sessionID,
+          todos: [
+            { id: 't1', content: 'Task one', status: 'completed', priority: 'high' },
+            { id: 't2', content: 'Task two', status: 'in_progress', priority: 'medium' },
+          ],
+        },
+      },
+    });
+    await hooks.event({ event: { type: 'file.edited', properties: { file: '/repo/one.ts' } } });
+
+    const events = server.received.map((r) => r.event);
+    const t1Id = events.find((e) => e.title === 'Task one')?.taskId as string;
+    const t2Id = events.find((e) => e.title === 'Task two' && e.status === 'thinking')?.taskId as string;
+
+    const filesOnT1 = events
+      .filter((e) => e.taskId === t1Id)
+      .flatMap((e) => e.filesTouched as string[]);
+    const filesOnT2 = events
+      .filter((e) => e.taskId === t2Id)
+      .flatMap((e) => e.filesTouched as string[]);
+
+    assert.deepEqual(filesOnT1, ['/repo/one.ts'], 'attached by tool.execute.after, scoped to the correct task');
+    assert.deepEqual(filesOnT2, [], 'the racing file.edited event must not attach the file to the new active task');
   } finally {
     await cleanup();
   }

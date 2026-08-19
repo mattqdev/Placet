@@ -2,14 +2,16 @@ import * as vscode from 'vscode';
 import { getDiffPreview, stageFiles, commit, push } from '../git/gitOps';
 import { generateCommitMessage } from '../commit/generateMessage';
 import { showApprovalPanel } from '../panel/approvalPanel';
+import { openDiffRecap } from '../panel/diffRecap';
 import type { Task } from '../types';
 import type { TaskStore } from '../server/taskStore';
 import type { Logger } from '../logger';
 
 /**
- * The 👍 flow: scope a diff to exactly the task's files, generate a commit
- * message, optionally confirm (diff + message preview, editable), then
- * stage + commit + push — never touching files outside task.filesTouched.
+ * The 👍 flow: open the task's diff (scoped to exactly its files) in VS
+ * Code's native diff editor, generate a commit message, optionally confirm,
+ * then stage + commit + push — never touching files outside
+ * task.filesTouched.
  */
 export async function runApproveFlow(
   workspaceRoot: string,
@@ -18,6 +20,16 @@ export async function runApproveFlow(
   logger: Logger
 ): Promise<void> {
   if (task.filesTouched.length === 0) return;
+
+  // Open the diff immediately, in parallel with commit-message generation
+  // below — that's an LLM round-trip and can take a few seconds, and there
+  // is no reason to make the user stare at nothing while it runs when the
+  // diff itself needs neither the diff text nor the LLM to be shown.
+  void openDiffRecap(workspaceRoot, task).catch((err) =>
+    logger.warn(
+      `Failed to open diff recap for "${task.title}": ${err instanceof Error ? err.message : String(err)}`
+    )
+  );
 
   try {
     const diff = await getDiffPreview(workspaceRoot, task.filesTouched);
@@ -29,7 +41,6 @@ export async function runApproveFlow(
     if (config.get<boolean>('requireConfirmation', true)) {
       void showApprovalPanel(
         task,
-        diff,
         message,
         (finalMessage) => {
           void commitAndPush(workspaceRoot, task, finalMessage, store, logger);

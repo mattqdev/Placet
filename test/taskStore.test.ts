@@ -64,6 +64,20 @@ test('markReviewed: flips reviewed and notifies; no-ops for an unknown taskId', 
   assert.equal(changes, 1);
 });
 
+test('apply: an inferred waiting/completed event does not clobber a prior error status', () => {
+  const store = new TaskStore();
+  store.apply(event({ status: 'error', timestamp: 1 }));
+  store.apply(event({ status: 'completed', timestamp: 2 })); // e.g. Stop/session.idle firing after the failure
+  assert.equal(store.get('t1')?.status, 'error');
+});
+
+test('apply: a fresh activity event still clears a prior error status', () => {
+  const store = new TaskStore();
+  store.apply(event({ status: 'error', timestamp: 1 }));
+  store.apply(event({ status: 'coding', timestamp: 2 })); // agent retried
+  assert.equal(store.get('t1')?.status, 'coding');
+});
+
 test('list: sorted newest-first by updatedAt', () => {
   const store = new TaskStore();
   store.apply(event({ taskId: 'old', timestamp: 1 }));

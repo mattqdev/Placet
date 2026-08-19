@@ -113,10 +113,10 @@ test('a failed tool_response is classified as error', () => {
   assert.equal(result.events[0].status, 'error');
 });
 
-test('Stop attaches to the active todo when one exists', () => {
+test('Stop attaches to the active todo when one exists, and reports it completed', () => {
   const result = translate('Stop', payload({}), { activeTaskId: 'sess-1:abc', activeTaskTitle: 'Add JWT middleware' });
   assert.equal(result.events[0].taskId, 'sess-1:abc');
-  assert.equal(result.events[0].status, 'waiting');
+  assert.equal(result.events[0].status, 'completed');
 });
 
 test('Stop falls back to the turn task when no todo is active', () => {

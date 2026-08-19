@@ -3,19 +3,16 @@ import type { Task } from '../types';
 
 const COMMIT_PUSH = 'Commit & Push';
 const EDIT_MESSAGE = 'Edit message…';
-const VIEW_DIFF = 'View diff';
 const DONT_ASK_AGAIN = "Don't ask again (this workspace)";
 
 /**
- * Approve-to-commit confirmation as a real native modal dialog rather than
- * a webview panel (which always renders as an editor tab, not a popup).
- * The trade-off: no inline syntax-highlighted diff or textarea in the same
- * surface — "View diff" opens the diff in a separate editor instead, and
- * editing the message uses a dedicated input box.
+ * Approve-to-commit confirmation as a native modal dialog. The full diff is
+ * no longer shown here — approveFlow already opened it in VS Code's native
+ * multi-file diff editor before this dialog appears, so this is just the
+ * lightweight "does the message look right" confirmation on top of it.
  */
 export async function showApprovalPanel(
   task: Task,
-  diff: string,
   initialMessage: string,
   onConfirm: (finalMessage: string) => void,
   onToggleRequireConfirmation: (requireConfirmation: boolean) => void
@@ -28,7 +25,6 @@ export async function showApprovalPanel(
       { modal: true, detail: buildDetail(task, message) },
       COMMIT_PUSH,
       EDIT_MESSAGE,
-      VIEW_DIFF,
       DONT_ASK_AGAIN
     );
 
@@ -45,9 +41,6 @@ export async function showApprovalPanel(
         if (edited !== undefined && edited.trim()) message = edited;
         break;
       }
-      case VIEW_DIFF:
-        await openDiffDocument(diff);
-        break;
       case DONT_ASK_AGAIN:
         onToggleRequireConfirmation(false);
         onConfirm(message);
@@ -60,20 +53,10 @@ export async function showApprovalPanel(
 }
 
 function buildDetail(task: Task, message: string): string {
-  const fileList = task.filesTouched.map((f) => `  • ${f}`).join('\n');
   return [
-    `${task.filesTouched.length} file${task.filesTouched.length === 1 ? '' : 's'} will be staged and committed — nothing else in the working tree is touched:`,
-    fileList,
+    `${task.filesTouched.length} file${task.filesTouched.length === 1 ? '' : 's'} will be staged and committed — see the diff tab that just opened for the full review.`,
     '',
     'Commit message:',
     message,
   ].join('\n');
-}
-
-async function openDiffDocument(diff: string): Promise<void> {
-  const doc = await vscode.workspace.openTextDocument({
-    content: diff || '(no diff available)',
-    language: 'diff',
-  });
-  await vscode.window.showTextDocument(doc, { preview: true, viewColumn: vscode.ViewColumn.Active });
 }

@@ -29,12 +29,22 @@ export class TaskStore {
       ? [...new Set([...existing.filesTouched, ...event.filesTouched])]
       : [...event.filesTouched];
 
+    // Stop/session.idle send 'waiting' or 'completed' as an *inference*
+    // ("the AI turn ended") rather than something observed from a specific
+    // tool call — so they must not paper over a real error the last tool
+    // call reported. A fresh thinking/coding/testing/error event still
+    // clears it, since that means the AI is actively working again.
+    const status =
+      existing?.status === 'error' && (event.status === 'waiting' || event.status === 'completed')
+        ? 'error'
+        : event.status;
+
     const task: Task = {
       taskId: event.taskId,
       source: event.source,
       sessionId: event.sessionId,
       title: event.title || existing?.title || 'Untitled task',
-      status: event.status,
+      status,
       filesTouched,
       createdAt: existing?.createdAt ?? event.timestamp,
       updatedAt: event.timestamp,
