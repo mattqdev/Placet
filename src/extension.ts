@@ -7,6 +7,8 @@ import { TaskPanelProvider } from './panel/taskPanelProvider';
 import { Logger } from './logger';
 import { ensureGitignoreEntry } from './workspace/ensureGitignore';
 import { connectClaudeCode } from './adapters/claudeCode/installer';
+import { connectOpencode } from './adapters/opencode/installer';
+import { runApproveFlow } from './approve/approveFlow';
 import type { Task } from './types';
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
@@ -42,10 +44,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   context.subscriptions.push({ dispose: () => server.dispose() });
 
   const onApprove = (task: Task) => {
-    // TODO(Phase 5): scoped diff + confirmation webview + commit/push.
-    vscode.window.showInformationMessage(
-      `Placet: approve-to-commit for "${task.title}" isn't wired up yet (${task.filesTouched.length} file(s) touched).`
-    );
+    void runApproveFlow(workspaceRoot, task, store, logger);
   };
 
   const panelProvider = new TaskPanelProvider(context.extensionUri, store, onApprove);
@@ -72,9 +71,23 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       }
     }),
     vscode.commands.registerCommand('placet.connectOpencode', async () => {
-      // TODO(Phase 4): write .opencode/plugin/placet.ts.
-      logger.info('placet.connectOpencode invoked (not implemented yet)');
-      vscode.window.showInformationMessage('Placet: opencode adapter is not implemented yet.');
+      try {
+        const pluginTemplatePath = context.asAbsolutePath(
+          path.join('resources', 'opencode', 'placet-plugin.ts')
+        );
+        if (!fs.existsSync(pluginTemplatePath)) {
+          throw new Error(`plugin template not found at ${pluginTemplatePath}`);
+        }
+        connectOpencode(workspaceRoot, pluginTemplatePath, logger);
+        vscode.window.showInformationMessage(
+          'Placet: opencode plugin installed at .opencode/plugin/placet.ts. Start a new opencode session in this project for it to take effect.'
+        );
+      } catch (err) {
+        logger.error('placet.connectOpencode failed', err);
+        vscode.window.showErrorMessage(
+          'Placet: failed to connect opencode — see .placet/placet.log for details.'
+        );
+      }
     })
   );
 

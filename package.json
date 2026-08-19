@@ -45,7 +45,18 @@
         "placet.requireConfirmation": {
           "type": "boolean",
           "default": true,
-          "description": "Ask for confirmation (with diff + commit message preview) before pushing after a thumbs-up."
+          "description": "Ask for confirmation (with diff + commit message preview) before committing and pushing after a thumbs-up."
+        },
+        "placet.commitMessageStyle": {
+          "type": "string",
+          "enum": ["conventional-commits", "freeform"],
+          "default": "conventional-commits",
+          "description": "Format used when generating commit messages for approved tasks."
+        },
+        "placet.commitMessageMaxSubjectLength": {
+          "type": "number",
+          "default": 72,
+          "description": "Maximum length requested for the generated commit message's subject line."
         }
       }
     }
@@ -54,9 +65,12 @@
     "compile": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --sourcemap && esbuild src/adapters/claudeCode/forwarder.ts --bundle --outfile=dist/forwarder.js --format=cjs --platform=node --sourcemap",
     "watch": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --sourcemap --watch",
     "typecheck": "tsc --noEmit",
+    "pretest": "npm run compile && esbuild test/*.test.ts --bundle --outdir=dist-test --format=cjs --platform=node --external:vscode --external:esbuild",
+    "test": "node --test dist-test/*.test.js",
     "vscode:prepublish": "npm run compile"
   },
   "devDependencies": {
+    "@opencode-ai/plugin": "^1.18.18",
     "@types/node": "^20.14.0",
     "@types/vscode": "^1.85.0",
     "esbuild": "^0.24.0",

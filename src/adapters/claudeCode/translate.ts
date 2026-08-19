@@ -72,9 +72,15 @@ function translateUserPromptSubmit(
   cache: SessionCache,
   timestamp: number
 ): TranslateResult {
+  // If a todo item is already in progress, attribute everything to it
+  // instead of starting a new turn task — otherwise the previous turn's row
+  // is orphaned (stuck at "thinking" forever, since Stop only updates
+  // whichever task is currently active).
+  if (cache.activeTaskId) return { events: [], cache };
+
   const prompt = typeof payload.prompt === 'string' ? payload.prompt : '';
   const turnTaskId = `${sessionId}:turn:${timestamp}`;
-  const turnTitle = truncate(prompt, 60) || 'Untitled task';
+  const turnTitle = summarize(prompt) || 'Untitled task';
 
   return {
     cache: { ...cache, turnTaskId, turnTitle },
@@ -208,9 +214,34 @@ function todoStatusToTaskStatus(status: string): TaskStatus {
   }
 }
 
-function truncate(text: string, max: number): string {
-  const flat = text.replace(/\s+/g, ' ').trim();
-  return flat.length > max ? `${flat.slice(0, max - 1)}…` : flat;
+// Not real summarization (no LLM call here) — the UserPromptSubmit hook
+// blocks Claude Code from proceeding until it returns, so a synchronous
+// LLM round-trip would add real latency to every single prompt. This is a
+// fast, local, "good enough" cleanup: strip filler openers and cut at a
+// word boundary instead of dumping the raw prompt truncated mid-word.
+const FILLER_PREFIX_PATTERNS: RegExp[] = [
+  /^(please|could you please|could you|can you please|can you|would you|will you)\s+/i,
+  /^(i want you to|i'd like you to|i need you to|i would like you to)\s+/i,
+  /^(let's|lets|now|ok,?|okay,?|so,?)\s+/i,
+];
+
+function summarize(text: string, maxChars = 48): string {
+  let flat = text.replace(/\s+/g, ' ').trim();
+  if (!flat) return '';
+
+  for (const pattern of FILLER_PREFIX_PATTERNS) {
+    flat = flat.replace(pattern, '');
+  }
+  flat = flat.trim();
+  if (flat.length === 0) return '';
+  flat = flat[0].toUpperCase() + flat.slice(1);
+
+  if (flat.length <= maxChars) return flat;
+
+  const words = flat.slice(0, maxChars + 1).split(' ');
+  words.pop();
+  const cut = words.join(' ').trim();
+  return `${cut || flat.slice(0, maxChars)}…`;
 }
 
 function slugId(sessionId: string, content: string): string {

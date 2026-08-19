@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as crypto from 'node:crypto';
-import type { Task, TaskStatus } from '../types';
+import type { Task, TaskSource, TaskStatus } from '../types';
 import { TaskStore } from '../server/taskStore';
 
 // Plain-text placeholders for now; swap for real codicons (via the webview
@@ -21,6 +21,13 @@ const STATUS_LABEL: Record<TaskStatus, string> = {
   waiting: 'Waiting',
   completed: 'Completed',
   error: 'Error',
+};
+
+// Small text badges rather than real logos: distinguishable without
+// borrowing either project's actual branding.
+const SOURCE_BADGE: Record<TaskSource, { label: string; title: string; color: string }> = {
+  'claude-code': { label: 'CC', title: 'Claude Code', color: '#d97757' },
+  opencode: { label: 'OC', title: 'opencode', color: '#5b8dd6' },
 };
 
 export class TaskPanelProvider implements vscode.WebviewViewProvider {
@@ -70,13 +77,15 @@ export class TaskPanelProvider implements vscode.WebviewViewProvider {
   body { font-family: var(--vscode-font-family); font-size: var(--vscode-font-size); color: var(--vscode-foreground); padding: 4px 8px; }
   .empty { opacity: 0.7; line-height: 1.4; }
   ul { list-style: none; margin: 0; padding: 0; }
-  li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 2px; border-bottom: 1px solid var(--vscode-widget-border, transparent); }
-  .task-main { display: flex; flex-direction: column; min-width: 0; }
+  li { display: flex; align-items: center; gap: 8px; padding: 6px 2px; border-bottom: 1px solid var(--vscode-widget-border, transparent); }
+  .badge { flex: none; width: 20px; height: 20px; border-radius: 4px; color: #fff; font-size: 0.65em; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+  .task-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
   .task-title { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .task-status { opacity: 0.75; font-size: 0.9em; }
-  button.approve { border: none; background: transparent; cursor: pointer; opacity: 0.8; font-size: 1.1em; padding: 2px 6px; }
+  button.approve { flex: none; border: none; background: transparent; cursor: pointer; opacity: 0.8; font-size: 1.1em; padding: 2px 6px; }
   button.approve:hover { opacity: 1; background: var(--vscode-toolbar-hoverBackground); border-radius: 4px; }
   button.approve:disabled { opacity: 0.3; cursor: default; }
+  .reviewed { flex: none; font-size: 1.1em; opacity: 0.6; padding: 2px 6px; }
 </style>
 </head>
 <body>
@@ -97,14 +106,25 @@ export class TaskPanelProvider implements vscode.WebviewViewProvider {
   private taskRow(task: Task): string {
     const icon = STATUS_ICON[task.status];
     const label = STATUS_LABEL[task.status];
-    const disabled = task.filesTouched.length === 0 ? 'disabled' : '';
+    const badge = SOURCE_BADGE[task.source];
     const title = escapeHtml(task.title);
+    const fileCount = task.filesTouched.length;
+
+    const action = task.reviewed
+      ? `<span class="reviewed" title="Committed">✅</span>`
+      : `<button class="approve" data-task-id="${escapeHtml(task.taskId)}" ${
+          fileCount === 0 ? 'disabled' : ''
+        } title="${
+          fileCount === 0 ? 'No files touched yet' : "Approve: stage + commit only this task's files"
+        }">👍</button>`;
+
     return `<li>
+  <span class="badge" style="background:${badge.color}" title="${badge.title}">${badge.label}</span>
   <div class="task-main">
     <span class="task-title" title="${title}">${title}</span>
-    <span class="task-status">${icon} ${label} · ${task.filesTouched.length} file${task.filesTouched.length === 1 ? '' : 's'}</span>
+    <span class="task-status">${icon} ${label} · ${fileCount} file${fileCount === 1 ? '' : 's'}</span>
   </div>
-  <button class="approve" data-task-id="${escapeHtml(task.taskId)}" ${disabled} title="Approve: stage + commit only this task's files">👍</button>
+  ${action}
 </li>`;
   }
 }

@@ -47,7 +47,10 @@ export function connectClaudeCode(workspaceRoot: string, forwarderPath: string, 
     const command = buildCommand(forwarderPath, name);
     const matchers = (settings.hooks[name] ??= []);
 
-    const existing = matchers.find((m) => m.hooks.some((h) => h.command.includes(forwarderPath)));
+    // Match by the forwarder's stable basename, not the full path — the
+    // path can change across reinstalls/updates, and matching on the new
+    // path would fail to find the old entry, leaving a stale duplicate.
+    const existing = matchers.find((m) => m.hooks.some((h) => h.command.includes('forwarder.js')));
     if (existing) {
       existing.hooks = [{ type: 'command', command }];
       if (matcher !== undefined) existing.matcher = matcher;
