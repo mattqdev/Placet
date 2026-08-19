@@ -1,6 +1,13 @@
 # Releasing
 
-Releases are cut manually and published automatically.
+Releases are cut with one command and published automatically.
+
+## How the marketplace update works
+
+When you publish a **new version** of the extension to the VS Code
+Marketplace, every installed VS Code instance picks it up automatically —
+the Marketplace itself is the update server, so nothing needs to "pull from
+a GitHub release". The workflow below does the publishing for you.
 
 ## One-time setup
 
@@ -9,27 +16,32 @@ Releases are cut manually and published automatically.
    created from an Azure DevOps Personal Access Token (Marketplace → Manage
    scope).
 2. That PAT is stored as a repository secret named `VSCE_PAT`
-   (Settings → Secrets and variables → Actions).
+   (Settings → Secrets and variables → Actions). **Without this secret the
+   automatic publish step fails** — that's why a manual .vsix upload may be
+   needed until it's configured.
 
 ## Cutting a release
 
-1. Make sure `main` is green (CI passing) and has everything you want to ship.
-2. Bump the version and create the tag:
+One command does it all: verifies a clean tree, runs typecheck/compile/tests,
+packages a sanity `.vsix`, bumps the version, tags, and pushes — which
+triggers the Release GitHub Action.
 
-   ```bash
-   npm version patch   # or: minor / major
-   git push && git push --tags
-   ```
+```bash
+npm run release            # bump patch → vX.Y.(Z+1)
+npm run release -- minor   # or: major, or an explicit version like 0.2.0
+```
 
-   `npm version` updates `package.json`, commits it, and creates a matching
-   `vX.Y.Z` git tag.
-3. Pushing the tag triggers `.github/workflows/release.yml`, which:
-   - runs typecheck, compile, and tests,
-   - verifies the tag matches `package.json`'s version,
-   - packages the extension with `vsce package`,
-   - publishes it to the VS Code Marketplace with `vsce publish`,
-   - creates a GitHub Release with the `.vsix` attached and auto-generated
-     release notes.
+`npm run release:prepare` does everything except the final push, in case you
+want to review the tag first.
+
+The pushed `vX.Y.Z` tag triggers `.github/workflows/release.yml`, which:
+- runs typecheck, compile, and tests,
+- verifies the tag matches `package.json`'s version,
+- packages the extension with `vsce package`,
+- publishes it to the VS Code Marketplace with `vsce publish` (via the
+  `VSCE_PAT` secret),
+- creates a GitHub Release with the `.vsix` attached and auto-generated
+  release notes.
 
 No manual `vsce publish` should be needed — if a release fails, fix the issue,
 delete the tag (`git tag -d vX.Y.Z && git push --delete origin vX.Y.Z`), and

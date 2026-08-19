@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="resources/readme/banner.svg" alt="Placet — approve-to-commit for AI coding assistants" width="100%">
+  <img src="resources/readme/banner.png" alt="Placet — approve-to-commit for AI coding assistants" width="100%">
 </p>
 
 <p align="center">
@@ -29,7 +29,7 @@ one at the end of the session.
 ## How it works
 
 <p align="center">
-  <img src="resources/readme/workflow.svg" alt="Diagram: Claude Code or opencode send task events through a local server to the Placet sidebar; approving a task diffs, commits, and pushes only that task's files, leaving the rest of the working tree untouched" width="100%">
+  <img src="resources/readme/workflow.png" alt="Diagram: Claude Code or opencode send task events through a local server to the Placet sidebar; approving a task diffs, commits, and pushes only that task's files, leaving the rest of the working tree untouched" width="100%">
 </p>
 
 - **Hooks / plugin** in your connected project forward task lifecycle
@@ -48,7 +48,7 @@ one at the end of the session.
 ## What it looks like
 
 <p align="center">
-  <img src="resources/readme/panel-mockup.svg" alt="Mockup of the Placet sidebar showing task cards with live status and the approve confirmation dialog with a scoped diff and editable commit message" width="100%">
+  <img src="resources/readme/panel-mockup.png" alt="Mockup of the Placet sidebar showing task cards with live status and the approve confirmation dialog with a scoped diff and editable commit message" width="100%">
 </p>
 
 ## Install

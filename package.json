@@ -95,7 +95,9 @@
     "test": "node --test dist-test/*.test.js",
     "vscode:prepublish": "npm run compile",
     "vsce:package": "vsce package",
-    "vsce:publish": "vsce publish"
+    "vsce:publish": "vsce publish",
+    "release": "bash scripts/release.sh",
+    "release:prepare": "bash scripts/release.sh --no-push"
   },
   "devDependencies": {
     "@opencode-ai/plugin": "^1.18.18",
