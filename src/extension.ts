@@ -49,7 +49,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   const panelProvider = new TaskPanelProvider(context.extensionUri, store, onApprove);
   context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(TaskPanelProvider.viewId, panelProvider)
+    vscode.window.registerWebviewViewProvider(TaskPanelProvider.viewId, panelProvider),
+    vscode.window.registerWebviewViewProvider(TaskPanelProvider.scmViewId, panelProvider)
   );
 
   context.subscriptions.push(

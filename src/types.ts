@@ -17,6 +17,12 @@ export interface TaskEvent {
   status: TaskStatus;
   filesTouched: string[];
   timestamp: number;
+  /**
+   * Raw user prompt, set only on the turn-creation event. Used by the
+   * extension host to synthesize a better title in the background — the
+   * fast heuristic `title` above is what's shown immediately.
+   */
+  prompt?: string;
 }
 
 /** Accumulated view of a task, built by folding TaskEvents with the same taskId. */

@@ -27,7 +27,7 @@ export async function runApproveFlow(
     const message = await generateCommitMessage(task, diff, { style, maxSubjectLength }, logger);
 
     if (config.get<boolean>('requireConfirmation', true)) {
-      showApprovalPanel(
+      void showApprovalPanel(
         task,
         diff,
         message,

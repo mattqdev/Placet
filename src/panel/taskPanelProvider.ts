@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as crypto from 'node:crypto';
+import * as fs from 'node:fs';
 import type { Task, TaskSource, TaskStatus } from '../types';
 import { TaskStore } from '../server/taskStore';
 
@@ -23,17 +24,19 @@ const STATUS_LABEL: Record<TaskStatus, string> = {
   error: 'Error',
 };
 
-// Small text badges rather than real logos: distinguishable without
-// borrowing either project's actual branding.
-const SOURCE_BADGE: Record<TaskSource, { label: string; title: string; color: string }> = {
-  'claude-code': { label: 'CC', title: 'Claude Code', color: '#d97757' },
-  opencode: { label: 'OC', title: 'opencode', color: '#5b8dd6' },
+// Real per-project marks (vendored from Simple Icons, see resources/icons/README.md),
+// recolored to each project's actual brand hex instead of a two-letter text badge.
+const SOURCE_ICON: Record<TaskSource, { file: string; title: string; color: string }> = {
+  'claude-code': { file: 'claude-code.svg', title: 'Claude Code', color: '#d97757' },
+  opencode: { file: 'opencode.svg', title: 'opencode', color: '#000000' },
 };
 
 export class TaskPanelProvider implements vscode.WebviewViewProvider {
   public static readonly viewId = 'placet.taskPanel';
+  public static readonly scmViewId = 'placet.taskPanelScm';
 
-  private view?: vscode.WebviewView;
+  private readonly views = new Set<vscode.WebviewView>();
+  private readonly sourceIconMarkup: Record<TaskSource, string>;
 
   constructor(
     private readonly extensionUri: vscode.Uri,
@@ -41,10 +44,22 @@ export class TaskPanelProvider implements vscode.WebviewViewProvider {
     private readonly onApprove: (task: Task) => void
   ) {
     this.store.onDidChange(() => this.render());
+    this.sourceIconMarkup = {
+      'claude-code': this.loadIcon('claude-code'),
+      opencode: this.loadIcon('opencode'),
+    };
+  }
+
+  private loadIcon(source: TaskSource): string {
+    const { file, color } = SOURCE_ICON[source];
+    const uri = vscode.Uri.joinPath(this.extensionUri, 'resources', 'icons', file);
+    const raw = fs.readFileSync(uri.fsPath, 'utf8');
+    return raw.replace('<svg ', `<svg fill="${color}" `);
   }
 
   resolveWebviewView(webviewView: vscode.WebviewView): void {
-    this.view = webviewView;
+    this.views.add(webviewView);
+    webviewView.onDidDispose(() => this.views.delete(webviewView));
     webviewView.webview.options = { enableScripts: true };
 
     webviewView.webview.onDidReceiveMessage((message: { type: string; taskId?: string }) => {
@@ -54,12 +69,14 @@ export class TaskPanelProvider implements vscode.WebviewViewProvider {
       }
     });
 
-    this.render();
+    webviewView.webview.html = this.buildHtml(this.store.list());
   }
 
   private render(): void {
-    if (!this.view) return;
-    this.view.webview.html = this.buildHtml(this.store.list());
+    const html = this.buildHtml(this.store.list());
+    for (const view of this.views) {
+      view.webview.html = html;
+    }
   }
 
   private buildHtml(tasks: Task[]): string {
@@ -78,7 +95,8 @@ export class TaskPanelProvider implements vscode.WebviewViewProvider {
   .empty { opacity: 0.7; line-height: 1.4; }
   ul { list-style: none; margin: 0; padding: 0; }
   li { display: flex; align-items: center; gap: 8px; padding: 6px 2px; border-bottom: 1px solid var(--vscode-widget-border, transparent); }
-  .badge { flex: none; width: 20px; height: 20px; border-radius: 4px; color: #fff; font-size: 0.65em; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+  .badge { flex: none; width: 20px; height: 20px; border-radius: 4px; background: #fff; display: flex; align-items: center; justify-content: center; }
+  .badge svg { width: 12px; height: 12px; }
   .task-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
   .task-title { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .task-status { opacity: 0.75; font-size: 0.9em; }
@@ -106,7 +124,7 @@ export class TaskPanelProvider implements vscode.WebviewViewProvider {
   private taskRow(task: Task): string {
     const icon = STATUS_ICON[task.status];
     const label = STATUS_LABEL[task.status];
-    const badge = SOURCE_BADGE[task.source];
+    const sourceIcon = SOURCE_ICON[task.source];
     const title = escapeHtml(task.title);
     const fileCount = task.filesTouched.length;
 
@@ -119,7 +137,7 @@ export class TaskPanelProvider implements vscode.WebviewViewProvider {
         }">👍</button>`;
 
     return `<li>
-  <span class="badge" style="background:${badge.color}" title="${badge.title}">${badge.label}</span>
+  <span class="badge" title="${sourceIcon.title}">${this.sourceIconMarkup[task.source]}</span>
   <div class="task-main">
     <span class="task-title" title="${title}">${title}</span>
     <span class="task-status">${icon} ${label} · ${fileCount} file${fileCount === 1 ? '' : 's'}</span>

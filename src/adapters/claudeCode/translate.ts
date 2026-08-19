@@ -93,6 +93,7 @@ function translateUserPromptSubmit(
         status: 'thinking',
         filesTouched: [],
         timestamp,
+        prompt,
       },
     ],
   };

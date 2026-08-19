@@ -30,6 +30,9 @@ interface TaskEvent {
   status: TaskStatus;
   filesTouched: string[];
   timestamp: number;
+  /** Raw user prompt, set only on the turn-creation event — see placet's
+   * src/adapters/titleSynthesizer.ts for how this becomes a better title. */
+  prompt?: string;
 }
 
 interface Discovery {
@@ -279,6 +282,7 @@ export const PlacetPlugin: Plugin = async ({ directory }) => {
         status: 'thinking',
         filesTouched: [],
         timestamp: Date.now(),
+        prompt: text,
       });
     }),
 

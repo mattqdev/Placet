@@ -1,5 +1,5 @@
-import { execFile } from 'node:child_process';
 import type { Task } from '../types';
+import { runClaudePrompt, cleanClaudeOutput } from '../ai/claudeCli';
 
 export interface CommitMessageOptions {
   style: 'conventional-commits' | 'freeform';
@@ -56,37 +56,10 @@ export function buildPrompt(task: Task, diff: string, options: CommitMessageOpti
 }
 
 function runClaude(prompt: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const child = execFile(
-      'claude',
-      ['-p'],
-      { timeout: 30000, maxBuffer: 1024 * 1024 },
-      (err, stdout) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        const cleaned = cleanMessage(stdout);
-        if (!cleaned) {
-          reject(new Error('empty response from claude -p'));
-          return;
-        }
-        resolve(cleaned);
-      }
-    );
-    child.stdin?.write(prompt);
-    child.stdin?.end();
-  });
+  return runClaudePrompt(prompt, 30000);
 }
 
-export function cleanMessage(raw: string): string {
-  return raw
-    .trim()
-    .replace(/^```[a-z]*\n?/i, '')
-    .replace(/```$/i, '')
-    .replace(/^["']|["']$/g, '')
-    .trim();
-}
+export const cleanMessage = cleanClaudeOutput;
 
 export function fallbackMessage(task: Task): string {
   const fileWord = task.filesTouched.length === 1 ? 'file' : 'files';

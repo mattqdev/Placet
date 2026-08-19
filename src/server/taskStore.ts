@@ -51,4 +51,16 @@ export class TaskStore {
     task.reviewed = true;
     this.emitter.emit('change');
   }
+
+  /**
+   * Applies a background-synthesized title, but only if nothing else has
+   * updated the task's title since it was requested — otherwise a slow LLM
+   * round-trip could clobber a better title a TodoWrite already supplied.
+   */
+  updateTitleIfUnchanged(taskId: string, expectedTitle: string, newTitle: string): void {
+    const task = this.tasks.get(taskId);
+    if (!task || task.title !== expectedTitle) return;
+    task.title = newTitle;
+    this.emitter.emit('change');
+  }
 }

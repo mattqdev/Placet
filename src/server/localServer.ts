@@ -5,6 +5,7 @@ import * as path from 'node:path';
 import type { TaskEvent, TaskStatus } from '../types';
 import { TaskStore } from './taskStore';
 import type { Logger } from '../logger';
+import { synthesizeTitle } from '../adapters/titleSynthesizer';
 
 const VALID_STATUSES: TaskStatus[] = [
   'thinking',
@@ -25,7 +26,8 @@ function isTaskEvent(body: unknown): body is TaskEvent {
     typeof e.title === 'string' &&
     VALID_STATUSES.includes(e.status as TaskStatus) &&
     Array.isArray(e.filesTouched) &&
-    e.filesTouched.every((f) => typeof f === 'string')
+    e.filesTouched.every((f) => typeof f === 'string') &&
+    (e.prompt === undefined || typeof e.prompt === 'string')
   );
 }
 
@@ -99,10 +101,30 @@ export class LocalServer {
           `Applied event: source=${body.source} task=${body.taskId} status=${body.status} files=${body.filesTouched.length}`
         );
         res.writeHead(204).end();
+
+        if (body.prompt) {
+          void this.synthesizeAndApplyTitle(body.taskId, body.title, body.prompt);
+        }
       } catch (err) {
         this.logger.error('Failed to parse /events request body', err);
         res.writeHead(400).end('invalid JSON');
       }
     });
+  }
+
+  /**
+   * Runs off the request/response cycle above (already responded 204), so
+   * this can take a few seconds without delaying the adapter that posted
+   * the event or, transitively, the AI tool's own turn.
+   */
+  private async synthesizeAndApplyTitle(
+    taskId: string,
+    heuristicTitle: string,
+    prompt: string
+  ): Promise<void> {
+    const title = await synthesizeTitle(prompt);
+    if (!title) return;
+    this.store.updateTitleIfUnchanged(taskId, heuristicTitle, title);
+    this.logger.info(`Synthesized title for task=${taskId}: "${title}"`);
   }
 }
