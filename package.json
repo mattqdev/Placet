@@ -4,12 +4,29 @@
   "description": "Tracks what your AI coding assistant (Claude Code, opencode, ...) is doing, task by task, and lets you approve-to-commit only the files each task touched.",
   "version": "0.0.1",
   "publisher": "placet",
-  "private": true,
+  "license": "MIT",
+  "icon": "resources/icons/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mattqdev/Placet.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mattqdev/Placet/issues"
+  },
+  "homepage": "https://github.com/mattqdev/Placet#readme",
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
     "Other"
+  ],
+  "keywords": [
+    "claude code",
+    "opencode",
+    "ai",
+    "git",
+    "commit",
+    "approval"
   ],
   "activationEvents": [
     "onStartupFinished"
@@ -20,6 +37,15 @@
       "explorer": [
         {
           "id": "placet.taskPanel",
+          "name": "Placet",
+          "type": "webview",
+          "contextualTitle": "Placet",
+          "visibility": "visible"
+        }
+      ],
+      "scm": [
+        {
+          "id": "placet.taskPanelScm",
           "name": "Placet",
           "type": "webview",
           "contextualTitle": "Placet",
@@ -67,12 +93,15 @@
     "typecheck": "tsc --noEmit",
     "pretest": "npm run compile && esbuild test/*.test.ts --bundle --outdir=dist-test --format=cjs --platform=node --external:vscode --external:esbuild",
     "test": "node --test dist-test/*.test.js",
-    "vscode:prepublish": "npm run compile"
+    "vscode:prepublish": "npm run compile",
+    "vsce:package": "vsce package",
+    "vsce:publish": "vsce publish"
   },
   "devDependencies": {
     "@opencode-ai/plugin": "^1.18.18",
     "@types/node": "^20.14.0",
     "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.9.2",
     "esbuild": "^0.24.0",
     "typescript": "^5.5.4"
   }

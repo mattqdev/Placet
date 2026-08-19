@@ -1,11 +1,19 @@
 # Placet
 
+[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/placet.placet?label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=placet.placet)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
 Tracks what your AI coding assistant (Claude Code, opencode, ...) is doing,
 task by task, in a panel at the bottom of the Explorer sidebar — and lets you
 👍 a finished, tested task to stage + commit *only the files that task
 touched*, with a generated commit message and a push confirmation.
 
 See `.claude/plans/facciamo-un-po-di-lively-bumblebee.md` for the full design.
+
+## Install
+
+Search for **Placet** in the VS Code Extensions view, or install from the
+[Marketplace listing](https://marketplace.visualstudio.com/items?itemName=placet.placet).
 
 ## Development
 
@@ -51,3 +59,11 @@ this repo — in whatever project you're using Claude Code / opencode on):
 - [x] Claude Code adapter (hooks → forwarder → local server)
 - [x] opencode adapter (plugin → local server)
 - [x] Approve-to-commit flow (scoped diff, confirmation panel, commit message generation, push)
+
+## Releasing
+
+See [`RELEASING.md`](./RELEASING.md).
+
+## License
+
+[MIT](./LICENSE)
