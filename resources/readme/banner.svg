@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" role="img" aria-label="Placet — approve-to-commit for AI coding assistants">
+  <defs>
+    <linearGradient id="bannerBg" x1="0" y1="0" x2="1200" y2="320" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2a1866"/>
+      <stop offset="1" stop-color="#150c3a"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#8266ff" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#8266ff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="markBg" x1="0" y1="0" x2="160" y2="160" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8266ff"/>
+      <stop offset="1" stop-color="#4527c4"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="320" fill="url(#bannerBg)"/>
+  <circle cx="140" cy="150" r="230" fill="url(#glow)"/>
+
+  <!-- mark (scaled copy of resources/icons/icon.svg) -->
+  <g transform="translate(64,70)">
+    <rect width="160" height="160" rx="35" fill="url(#markBg)"/>
+    <path d="M62.5,93.8 L78.8,93.8 L73.75,145 L68.75,135 L63.75,145 Z" fill="#dfa23a"/>
+    <path d="M97.5,93.8 L81.25,93.8 L86.25,145 L91.25,135 L96.25,145 Z" fill="#f6c667"/>
+    <circle cx="80" cy="70" r="31.25" fill="#ffffff"/>
+    <circle cx="80" cy="70" r="31.25" fill="none" stroke="#d9cdff" stroke-width="2"/>
+    <path d="M65 71.3 L76.3 82.5 L95 56.3" fill="none" stroke="#4c2fc7" stroke-width="8.75"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- wordmark -->
+  <text x="262" y="158" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="72" font-weight="700" fill="#ffffff">Placet</text>
+
+  <!-- tagline -->
+  <text x="266" y="196" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="21" fill="#d8cdff">Approve-to-commit for AI coding assistants.</text>
+  <text x="266" y="224" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" fill="#a99bd6">Every AI task gets its own scoped diff, commit message, and push confirmation.</text>
+
+  <!-- supported tool chips -->
+  <g font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f2eeff">
+    <rect x="266" y="252" width="150" height="34" rx="17" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.16"/>
+    <g transform="translate(284,261) scale(0.7)">
+      <path d="M21 10.5h3v3h-3v3h-1.5v3H18v-3h-1.5v3H15v-3H9v3H7.5v-3H6v3H4.5v-3H3v-3H0v-3h3v-6h18Zm-15 0h1.5v-3H6Zm10.5 0H18v-3h-1.5z" fill="#f2eeff" fill-opacity="0.9"/>
+    </g>
+    <text x="304" y="274">Claude Code</text>
+
+    <rect x="428" y="252" width="122" height="34" rx="17" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.16"/>
+    <g transform="translate(446,261) scale(0.7)">
+      <path d="M22 24H2V0h20zM17 4.8H7v14.4h10z" fill="#f2eeff" fill-opacity="0.9"/>
+    </g>
+    <text x="466" y="274">opencode</text>
+
+    <text x="566" y="274" fill="#8676b3" font-size="13">+ more coming</text>
+  </g>
+</svg>

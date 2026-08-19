@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1420 460" role="img" aria-label="Placet workflow: AI assistant events flow through a local server into the sidebar; approving a task diffs, commits, and pushes only that task's files, leaving the rest of the working tree untouched">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8f7fd9"/>
+    </marker>
+    <marker id="arrowGrey" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#77708f"/>
+    </marker>
+  </defs>
+
+  <rect width="1420" height="460" fill="#150c3a"/>
+
+  <g font-family="'Segoe UI', Helvetica, Arial, sans-serif">
+
+    <!-- pass 1: all boxes, fully opaque, drawn first -->
+    <rect x="40" y="90" width="190" height="110" rx="12" fill="#241454" stroke="#4a3a8a"/>
+    <rect x="270" y="90" width="190" height="110" rx="12" fill="#241454" stroke="#4a3a8a"/>
+    <rect x="500" y="90" width="190" height="110" rx="12" fill="#241454" stroke="#4a3a8a"/>
+    <rect x="730" y="90" width="190" height="110" rx="12" fill="#2c1a52" stroke="#6b4fb8"/>
+    <rect x="960" y="90" width="190" height="110" rx="12" fill="#241454" stroke="#4a3a8a"/>
+    <rect x="1190" y="90" width="190" height="110" rx="12" fill="#173a26" stroke="#2f6b46"/>
+    <rect x="700" y="290" width="330" height="100" rx="12" fill="#150c3a" stroke="#77708f" stroke-width="1.5" stroke-dasharray="6 5"/>
+
+    <!-- pass 2: arrows, drawn on top of box edges so labels are never clipped -->
+    <line x1="230" y1="145" x2="266" y2="145" stroke="#8f7fd9" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="460" y1="145" x2="496" y2="145" stroke="#8f7fd9" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="690" y1="145" x2="726" y2="145" stroke="#f6c667" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="920" y1="145" x2="956" y2="145" stroke="#8f7fd9" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="1150" y1="145" x2="1186" y2="145" stroke="#8f7fd9" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="825" y1="290" x2="825" y2="204" stroke="#77708f" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrowGrey)"/>
+
+    <!-- pass 3: all text, drawn last so it always sits on top -->
+    <text x="135" y="132" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">Claude Code /</text>
+    <text x="135" y="152" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">opencode</text>
+    <text x="135" y="178" text-anchor="middle" font-size="12" fill="#b6a9e6">hooks / plugin in</text>
+    <text x="135" y="193" text-anchor="middle" font-size="12" fill="#b6a9e6">your project</text>
+
+    <text x="365" y="139" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">Local server</text>
+    <text x="365" y="165" text-anchor="middle" font-size="12" fill="#b6a9e6">127.0.0.1 · per-workspace</text>
+    <text x="365" y="180" text-anchor="middle" font-size="12" fill="#b6a9e6">port + secret token</text>
+
+    <text x="595" y="139" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">Placet sidebar</text>
+    <text x="595" y="165" text-anchor="middle" font-size="12" fill="#b6a9e6">task cards,</text>
+    <text x="595" y="180" text-anchor="middle" font-size="12" fill="#b6a9e6">live status</text>
+
+    <text x="825" y="139" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">Scoped diff</text>
+    <text x="825" y="165" text-anchor="middle" font-size="12" fill="#cabdf0">only this task's</text>
+    <text x="825" y="180" text-anchor="middle" font-size="12" fill="#cabdf0">files touched</text>
+
+    <text x="1055" y="139" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">Confirm panel</text>
+    <text x="1055" y="165" text-anchor="middle" font-size="12" fill="#b6a9e6">diff + editable</text>
+    <text x="1055" y="180" text-anchor="middle" font-size="12" fill="#b6a9e6">commit message</text>
+
+    <text x="1285" y="132" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">git commit</text>
+    <text x="1285" y="152" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">+ push</text>
+    <text x="1285" y="178" text-anchor="middle" font-size="12" fill="#9fd6b3">only this task's files</text>
+
+    <text x="865" y="322" text-anchor="middle" font-size="13" font-weight="600" fill="#c9c3dd">Rest of the working tree</text>
+    <text x="865" y="342" text-anchor="middle" font-size="12" fill="#948db3">other tasks, unrelated edits,</text>
+    <text x="865" y="358" text-anchor="middle" font-size="12" fill="#948db3">work still in progress</text>
+
+    <!-- arrow labels last, on a small backing pill so they read cleanly over the gap -->
+    <g font-size="11" fill="#a99bd6">
+      <rect x="230" y="103" width="40" height="26" fill="#150c3a"/>
+      <text x="248" y="113" text-anchor="middle">task</text>
+      <text x="248" y="125" text-anchor="middle">event</text>
+
+      <rect x="462" y="103" width="34" height="26" fill="#150c3a"/>
+      <text x="478" y="113" text-anchor="middle" font-size="9.5">thinking →</text>
+      <text x="478" y="125" text-anchor="middle" font-size="9.5">testing</text>
+
+      <text x="708" y="128" text-anchor="middle" font-size="14">👍</text>
+
+      <rect x="922" y="103" width="34" height="26" fill="#150c3a"/>
+      <text x="938" y="113" text-anchor="middle" font-size="9.5">gen. commit</text>
+      <text x="938" y="125" text-anchor="middle" font-size="9.5">message</text>
+
+      <rect x="1150" y="106" width="36" height="26" fill="#150c3a"/>
+      <text x="1168" y="118" text-anchor="middle" font-size="10">Commit</text>
+      <text x="1168" y="130" text-anchor="middle" font-size="10">&amp; Push</text>
+    </g>
+
+    <text x="838" y="255" font-size="11.5" fill="#948db3">stays uncommitted</text>
+  </g>
+</svg>

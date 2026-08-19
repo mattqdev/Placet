@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 640" role="img" aria-label="Mockup of the Placet sidebar: a list of AI task cards with live status, and the approve confirmation dialog showing a scoped diff and editable commit message">
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+    <clipPath id="win">
+      <rect x="20" y="20" width="1000" height="600" rx="14"/>
+    </clipPath>
+    <marker id="mArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#f6c667"/>
+    </marker>
+  </defs>
+
+  <rect width="1040" height="640" fill="#12121a"/>
+
+  <!-- app window frame -->
+  <rect x="20" y="20" width="1000" height="600" rx="14" fill="#1e1e1e" stroke="#3c3c3c" stroke-width="1.5"/>
+
+  <g clip-path="url(#win)">
+    <!-- title bar -->
+    <rect x="20" y="20" width="1000" height="40" fill="#323235"/>
+    <circle cx="44" cy="40" r="6" fill="#ff5f57"/>
+    <circle cx="64" cy="40" r="6" fill="#febc2e"/>
+    <circle cx="84" cy="40" r="6" fill="#28c840"/>
+    <text x="520" y="45" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#cfcfcf">Placet — Explorer</text>
+    <line x1="20" y1="60" x2="1020" y2="60" stroke="#3c3c3c"/>
+
+    <!-- sidebar -->
+    <rect x="20" y="60" width="340" height="560" fill="#252526"/>
+    <line x1="360" y1="60" x2="360" y2="620" stroke="#3c3c3c"/>
+
+    <!-- editor placeholder (dimmed, modal has focus) -->
+    <rect x="360" y="60" width="660" height="560" fill="#1e1e1e"/>
+    <g fill="#3c3c46" opacity="0.5">
+      <rect x="400" y="96" width="220" height="8" rx="4"/>
+      <rect x="400" y="122" width="320" height="8" rx="4"/>
+      <rect x="424" y="148" width="180" height="8" rx="4"/>
+      <rect x="424" y="174" width="260" height="8" rx="4"/>
+      <rect x="400" y="200" width="140" height="8" rx="4"/>
+    </g>
+
+    <!-- explorer header -->
+    <text x="44" y="88" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" letter-spacing="1" font-weight="700" fill="#8a8a8a">▸ EXPLORER</text>
+    <line x1="20" y1="100" x2="360" y2="100" stroke="#2f2f31"/>
+
+    <!-- placet section header -->
+    <g transform="translate(44,116)">
+      <circle cx="8" cy="8" r="8" fill="#6b4fe0"/>
+      <path d="M4.6 8.2 L7 10.6 L11.6 5.4" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="68" y="128" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" letter-spacing="1" font-weight="700" fill="#cfcfcf">▾ PLACET</text>
+    <line x1="20" y1="138" x2="360" y2="138" stroke="#2f2f31"/>
+
+    <!-- ===== task cards ===== -->
+    <g font-family="'Segoe UI', Helvetica, Arial, sans-serif">
+
+      <!-- card 1 -->
+      <rect x="32" y="150" width="316" height="70" rx="8" fill="#2d2d30" stroke="#3c3c3c"/>
+      <rect x="42" y="160" width="18" height="18" rx="4" fill="#d97757"/>
+      <text x="66" y="173" font-size="13" font-weight="600" fill="#e8e8e8">Add rate limiter to API client</text>
+      <text x="66" y="196" font-size="11" fill="#dcdcaa">🧪 Testing</text>
+      <text x="322" y="190" text-anchor="middle" font-size="15" fill="#8a8a8a" opacity="0.4">👍</text>
+
+      <!-- card 2 (active / about to be approved) -->
+      <rect x="32" y="238" width="316" height="70" rx="8" fill="#2d2d30" stroke="#6b4fb8" stroke-width="1.5"/>
+      <rect x="42" y="248" width="18" height="18" rx="4" fill="#d97757"/>
+      <text x="66" y="261" font-size="13" font-weight="600" fill="#e8e8e8">Fix off-by-one in pagination</text>
+      <text x="66" y="284" font-size="11" fill="#89d185">✅ Completed</text>
+      <circle cx="322" cy="273" r="15" fill="#f6c667" fill-opacity="0.18" stroke="#f6c667"/>
+      <text x="322" y="278" text-anchor="middle" font-size="15" fill="#f6c667">👍</text>
+
+      <!-- card 3 -->
+      <rect x="32" y="326" width="316" height="70" rx="8" fill="#2d2d30" stroke="#3c3c3c"/>
+      <rect x="42" y="336" width="18" height="18" rx="4" fill="#3a3a3a" stroke="#5a5a5a"/>
+      <path d="M46 340 L57 340 L57 350 L46 350 Z M49.6 342.9 L53.4 342.9 L53.4 347.1 L49.6 347.1 Z" fill="#e8e8e8"/>
+      <text x="66" y="349" font-size="13" font-weight="600" fill="#e8e8e8">Refactor auth middleware</text>
+      <text x="66" y="372" font-size="11" fill="#dcdcaa">✏️ Writing code</text>
+      <text x="322" y="366" text-anchor="middle" font-size="15" fill="#8a8a8a" opacity="0.4">👍</text>
+
+      <!-- card 4 (already reviewed) -->
+      <rect x="32" y="414" width="316" height="70" rx="8" fill="#2d2d30" stroke="#3c3c3c"/>
+      <rect x="42" y="424" width="18" height="18" rx="4" fill="#3a3a3a" stroke="#5a5a5a"/>
+      <path d="M46 428 L57 428 L57 438 L46 438 Z M49.6 430.9 L53.4 430.9 L53.4 435.1 L49.6 435.1 Z" fill="#e8e8e8"/>
+      <text x="66" y="437" font-size="13" font-weight="600" fill="#e8e8e8">Write tests for token refresh</text>
+      <text x="66" y="460" font-size="11" fill="#89d185">✅ Completed</text>
+      <text x="322" y="454" text-anchor="middle" font-size="15" fill="#4fb35c" title="Committed">✅</text>
+
+      <!-- card 5 -->
+      <rect x="32" y="502" width="316" height="70" rx="8" fill="#2d2d30" stroke="#3c3c3c"/>
+      <rect x="42" y="512" width="18" height="18" rx="4" fill="#d97757"/>
+      <text x="66" y="525" font-size="13" font-weight="600" fill="#e8e8e8">Update README examples</text>
+      <text x="66" y="548" font-size="11" fill="#c9c9c9">💭 Thinking</text>
+      <text x="322" y="542" text-anchor="middle" font-size="15" fill="#8a8a8a" opacity="0.4">👍</text>
+    </g>
+
+    <!-- connector from the clicked 👍 to the confirm dialog -->
+    <path d="M340 273 C 400 273, 380 300, 400 320" fill="none" stroke="#f6c667" stroke-width="2" stroke-dasharray="2 5" marker-end="url(#mArrow)"/>
+
+    <!-- ===== approve confirmation modal ===== -->
+    <g filter="url(#shadow)">
+      <rect x="400" y="176" width="560" height="320" rx="12" fill="#2d2d30" stroke="#545460" stroke-width="1.5"/>
+    </g>
+    <g font-family="'Segoe UI', Helvetica, Arial, sans-serif">
+      <text x="424" y="206" font-size="14" font-weight="700" fill="#ffffff">Placet — Approve “Fix off-by-one in pagination”</text>
+      <text x="932" y="206" font-size="14" fill="#8a8a8a">✕</text>
+      <line x1="400" y1="218" x2="960" y2="218" stroke="#3c3c3c"/>
+
+      <text x="424" y="240" font-size="12" fill="#cfcfcf">3 files changed</text>
+      <text x="900" y="240" text-anchor="end" font-size="12" fill="#89d185">+42</text>
+      <text x="936" y="240" text-anchor="end" font-size="12" fill="#f14c4c">−6</text>
+
+      <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5">
+        <text x="424" y="264" fill="#9cdcfe">src/api/paginate.ts</text>
+        <text x="880" y="264" text-anchor="end" fill="#89d185">+18</text>
+        <text x="936" y="264" text-anchor="end" fill="#f14c4c">−4</text>
+
+        <text x="424" y="286" fill="#9cdcfe">src/api/paginate.test.ts</text>
+        <text x="880" y="286" text-anchor="end" fill="#89d185">+20</text>
+        <text x="936" y="286" text-anchor="end" fill="#f14c4c">−2</text>
+
+        <text x="424" y="308" fill="#9cdcfe">CHANGELOG.md</text>
+        <text x="880" y="308" text-anchor="end" fill="#89d185">+4</text>
+        <text x="936" y="308" text-anchor="end" fill="#6a6a6a">−0</text>
+      </g>
+
+      <line x1="400" y1="322" x2="960" y2="322" stroke="#3c3c3c"/>
+
+      <text x="424" y="342" font-size="11" fill="#9d9d9d">Commit message:</text>
+      <rect x="424" y="350" width="512" height="56" rx="6" fill="#1e1e1e" stroke="#3c3c3c"/>
+      <text x="434" y="372" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12" fill="#d4d4d4">fix(api): correct off-by-one in pagination cursor</text>
+      <text x="434" y="392" font-size="10.5" font-style="italic" fill="#6f6f6f">Adjusts the slice bounds so the last page is no longer dropped.</text>
+
+      <rect x="424" y="426" width="20" height="14" rx="3" fill="none" stroke="#6f6f6f"/>
+      <text x="452" y="437" font-size="10.5" fill="#8a8a8a">Always commit without confirming</text>
+
+      <rect x="424" y="456" width="150" height="34" rx="6" fill="#8266ff"/>
+      <text x="499" y="477" text-anchor="middle" font-size="12" font-weight="600" fill="#ffffff">Commit &amp; Push</text>
+      <text x="596" y="477" font-size="12" fill="#9d9d9d">Cancel</text>
+    </g>
+  </g>
+</svg>
