@@ -1,0 +1,86 @@
+name: Bug report
+description: Report a problem with Placet
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report. Before you
+        start, search the [existing issues](https://github.com/mattqdev/Placet/issues)
+        to make sure this isn't a duplicate.
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: The minimal steps to trigger the bug.
+      placeholder: |
+        1. Open a workspace and run "Placet: Connect Claude Code"...
+        2. Start a Claude Code session and ask it to...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: |
+        Paste the relevant lines from `.placet/placet.log` in the affected
+        workspace, and/or anything from the "Placet" Output channel.
+      render: text
+  - type: dropdown
+    id: adapter
+    attributes:
+      label: Adapter
+      description: Which AI tool were you connecting Placet to?
+      options:
+        - Claude Code
+        - opencode
+        - Both
+        - Not applicable / not sure
+  - type: input
+    id: placet-version
+    attributes:
+      label: Placet version
+      description: Version shown in the VS Code Extensions view (e.g. 0.0.1)
+    validations:
+      required: true
+  - type: input
+    id: vscode-version
+    attributes:
+      label: VS Code version
+      description: e.g. 1.90.0
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      description: e.g. macOS 14.5, Windows 11, Ubuntu 24.04
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Anything else that might help (screenshots, related issues, etc.)

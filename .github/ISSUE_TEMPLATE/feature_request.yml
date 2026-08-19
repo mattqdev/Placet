@@ -1,0 +1,43 @@
+name: Feature request
+description: Suggest an idea for Placet
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting something! Placet is deliberately small, so
+        before opening a feature request, search the
+        [existing issues](https://github.com/mattqdev/Placet/issues) — your
+        idea may already be tracked.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the pain point or limitation you're hitting. Focus on the problem, not the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What behavior would you like to see? Rough sketches are fine.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Anything you already tried or thought about (workarounds, other tools, etc.).
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      description: Placet tracks AI-assistant tasks and lets you approve-to-commit only the files each task touched. Please confirm the request fits that scope.
+      options:
+        - label: I believe this fits Placet's current scope (task tracking / approve-to-commit / adapter wiring)
+        - label: This would expand the scope beyond what Placet does today
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Screenshots, mockups, links, or anything else that helps.
