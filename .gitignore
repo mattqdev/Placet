@@ -3,3 +3,6 @@ dist/
 dist-test/
 *.vsix
 .placet/
+
+# Placet Claude Code hooks (personal, embeds an absolute path) — do not commit
+.claude/settings.local.json
