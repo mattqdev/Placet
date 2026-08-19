@@ -3,7 +3,7 @@
   "displayName": "Placet",
   "description": "Tracks what your AI coding assistant (Claude Code, opencode, ...) is doing, task by task, and lets you approve-to-commit only the files each task touched.",
   "version": "0.0.1",
-  "publisher": "placet",
+  "publisher": "mattqdev",
   "license": "MIT",
   "icon": "resources/icons/icon.png",
   "repository": {
