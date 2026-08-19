@@ -1,0 +1,65 @@
+{
+  "name": "placet",
+  "displayName": "Placet",
+  "description": "Tracks what your AI coding assistant (Claude Code, opencode, ...) is doing, task by task, and lets you approve-to-commit only the files each task touched.",
+  "version": "0.0.1",
+  "publisher": "placet",
+  "private": true,
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "placet.taskPanel",
+          "name": "Placet",
+          "type": "webview",
+          "contextualTitle": "Placet",
+          "visibility": "visible"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "placet.connectClaudeCode",
+        "title": "Placet: Connect Claude Code",
+        "category": "Placet"
+      },
+      {
+        "command": "placet.connectOpencode",
+        "title": "Placet: Connect opencode",
+        "category": "Placet"
+      }
+    ],
+    "configuration": {
+      "title": "Placet",
+      "properties": {
+        "placet.requireConfirmation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Ask for confirmation (with diff + commit message preview) before pushing after a thumbs-up."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --sourcemap",
+    "watch": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --sourcemap --watch",
+    "typecheck": "tsc --noEmit",
+    "vscode:prepublish": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.5.4"
+  }
+}
