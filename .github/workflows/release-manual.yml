@@ -1,0 +1,84 @@
+name: Release (manual)
+
+# Run it from the Actions tab: "Run workflow" → choose version bump and
+# whether to also publish to the VS Code Marketplace.
+#
+# It bumps the version, builds the .vsix, pushes the vX.Y.Z tag and creates
+# a GitHub Release with the .vsix attached. The tag is pushed with
+# GITHUB_TOKEN, so this does NOT re-trigger release.yml (events created by
+# the Actions bot don't start other workflows).
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: "Type of version bump"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: patch
+      publish_to_marketplace:
+        description: "Also publish to the VS Code Marketplace (needs the VSCE_PAT secret)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+env:
+  VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run compile
+      - run: npm test
+
+      - name: Bump version
+        id: bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          npm version "${{ inputs.version_type }}" --no-git-tag-version
+          VERSION="v$(node -p "require('./package.json').version")"
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "Tag $VERSION already exists — nothing new to release." >&2
+            exit 1
+          fi
+          git add package.json package-lock.json
+          git commit -m "chore: bump version to $VERSION"
+          git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Package extension
+        run: npx vsce package
+
+      - name: Push version tag
+        run: |
+          git tag "${{ steps.bump.outputs.version }}"
+          git push origin "${{ steps.bump.outputs.version }}"
+
+      - name: Publish to Visual Studio Marketplace
+        if: inputs.publish_to_marketplace == 'true' && env.VSCE_PAT != ''
+        run: npx vsce publish --packagePath *.vsix
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.bump.outputs.version }}
+          files: "*.vsix"
+          generate_release_notes: true

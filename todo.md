@@ -12,3 +12,5 @@ crea uno script/comando o quello che ritieni piu opportuno per buildare in auton
 
 - aggiungere visivamente una divisione bellina delle task precendenti (quelle quindi completate) con quelle in corso di sviluppo
 - mettere degli indicativi di tempo sulle task (tipo "2 Hours ago", "10 Minutes ago" eccetera)
+- domanda: se tra una versione e l'altra si aggiorna il/i file ponte tra un provider ai e placet, quelli che vanno nella cartella locale del progetto di chi lo usa o nella memoria del computer, quel file si aggiorna da solo all'aggiornare dell'estensione o bisogna ogni volta riconnettere con la command bar? Risolvi questa cosa.
+- Mi piacerebbe pensare ad un modo alternativo, magari automatico per connettere placet ai provider ai

@@ -34,6 +34,14 @@ npm run release -- minor   # or: major, or an explicit version like 0.2.0
 `npm run release:prepare` does everything except the final push, in case you
 want to review the tag first.
 
+### Releasing from GitHub (no local commands)
+
+Run the **Release (manual)** workflow from the repo's *Actions* tab ("Run
+workflow"): pick the version bump and whether to also publish to the
+Marketplace. It bumps the version, builds the `.vsix`, pushes the `vX.Y.Z`
+tag and creates a GitHub Release with the `.vsix` attached (and, if
+requested, publishes to the Marketplace).
+
 The pushed `vX.Y.Z` tag triggers `.github/workflows/release.yml`, which:
 - runs typecheck, compile, and tests,
 - verifies the tag matches `package.json`'s version,
