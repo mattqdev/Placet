@@ -2,7 +2,7 @@
   "name": "placet",
   "displayName": "Placet",
   "description": "Tracks what your AI coding assistant (Claude Code, opencode, ...) is doing, task by task, and lets you approve-to-commit only the files each task touched.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "mattqdev",
   "license": "MIT",
   "icon": "resources/icons/icon.png",
@@ -75,7 +75,10 @@
         },
         "placet.commitMessageStyle": {
           "type": "string",
-          "enum": ["conventional-commits", "freeform"],
+          "enum": [
+            "conventional-commits",
+            "freeform"
+          ],
           "default": "conventional-commits",
           "description": "Format used when generating commit messages for approved tasks."
         },
